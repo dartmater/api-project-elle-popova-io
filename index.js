@@ -2,6 +2,7 @@ async function fetchData() {
   try {
     const response = await fetch(" https://api.artic.edu/api/v1/publications");
     const data = await response.json();
+    console.log(data); //data logged
     displayData(data);
   } catch (error) {
     console.error("You obtained an error:", error);
