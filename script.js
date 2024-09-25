@@ -6,7 +6,7 @@ const wrapper = document.getElementById("wrapper");
 let currentArtworks = [];
 let currentExhibitions = [];
 
-// Fetch artworks with a random parameter to avoid caching issues
+// Fetch artworks with a random parameter
 async function fetchArtworks() {
   try {
     const response = await fetch(
@@ -40,28 +40,20 @@ function displayArtworks(artworks) {
     artworkElement.classList.add("artwork");
     artworkElement.innerHTML = `
       <h2>${artwork.title}</h2>
-      <p>Artist: ${artwork.artist_title}</p>
+      <p>Artist: ${artwork.artist_display}</p> <!-- Fixed to artist_display -->
       <p>Date: ${artwork.date_display}</p>
       <img src="https://www.artic.edu/iiif/2/${artwork.image_id}/full/200,/0/default.jpg" alt="${artwork.title}">
-      <button id="back-btn">Back to Artworks</button>
-      <p>${artwork.material_ids}</p>
-      `;
+    `;
     wrapper.appendChild(artworkElement);
   });
 }
-// Add back button functionality
-document.getElementById("back-btn").addEventListener("click", () => {
-  displayArtworks(currentArtworks); // Show the list of artworks again
-});
-
-
 // Function to format date and time
 function formatDateTime(dateTimeString) {
   const date = new Date(dateTimeString);
   return date.toLocaleString(); // Use default locale
 }
 
-// Display exhibitions with formatted date and time
+// Display exhibitions
 function displayExhibitions(exhibitions) {
   wrapper.innerHTML = ""; // Clear previous content
   exhibitions.forEach((exhibition) => {
@@ -110,15 +102,13 @@ async function handleSearch() {
 artworksBtn.addEventListener("click", async () => {
   artworksBtn.classList.add("active");
   exhibitionsBtn.classList.remove("active");
-  currentArtworks = await fetchArtworks(); // Store fetched artworks
-  displayArtworks(currentArtworks);
+  displayArtworks(currentArtworks); // Display already fetched artworks
 });
 
 exhibitionsBtn.addEventListener("click", async () => {
   exhibitionsBtn.classList.add("active");
   artworksBtn.classList.remove("active");
-  currentExhibitions = await fetchExhibitions(); // Store fetched exhibitions
-  displayExhibitions(currentExhibitions);
+  displayExhibitions(currentExhibitions); // Display already fetched exhibitions
 });
 
 // Search bar event listener
@@ -130,8 +120,18 @@ function resetSearch() {
   handleSearch(); // Refresh the displayed items
 }
 
-// Optional: Add a reset button to clear the search
-const resetBtn = document.createElement("button");
-resetBtn.innerText = "Reset Search";
-resetBtn.addEventListener("click", resetSearch);
-document.body.appendChild(resetBtn); // Add the reset button to the body
+// // Optional: Add a reset button to clear the search
+// const resetBtn = document.createElement("button");
+// resetBtn.innerText = "Reset Search";
+// resetBtn.addEventListener("click", resetSearch);
+// document.body.appendChild(resetBtn); // Add the reset button to the body
+
+// Initialize by fetching both artworks and exhibitions
+async function initializeApp() {
+  currentArtworks = await fetchArtworks(); // Store fetched artworks
+  currentExhibitions = await fetchExhibitions(); // Store fetched exhibitions
+  artworksBtn.click(); // Click the artworks button to display artworks by default
+}
+
+// Start the application
+initializeApp(); // Initialize the app by fetching both artworks and exhibitions
